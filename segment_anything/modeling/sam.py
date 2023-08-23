@@ -55,6 +55,7 @@ class Sam(nn.Module):
         self,
         batched_input: List[Dict[str, Any]],
         multimask_output: bool,
+        hard_mask: Optional[bool] = True
     ) -> List[Dict[str, torch.Tensor]]:
         """
         Predicts masks end-to-end from provided images and prompts.
@@ -78,7 +79,9 @@ class Sam(nn.Module):
                 Already transformed to the input frame of the model.
               'mask_inputs': (torch.Tensor) Batched mask inputs to the model,
                 in the form Bx1xHxW.
-          multimask_output (bool): Whether the model should predict multiple
+              'hard_mask': (bool): Whether the mask should return binary 
+                thresholded values or not,
+              'multimask_output' (bool): Whether the model should predict multiple
             disambiguating masks, or return a single mask.
 
         Returns:
@@ -120,7 +123,10 @@ class Sam(nn.Module):
                 input_size=image_record["image"].shape[-2:],
                 original_size=image_record["original_size"],
             )
-            masks = masks > self.mask_threshold
+            
+            if hard_mask:
+                masks = masks > self.mask_threshold
+            
             outputs.append(
                 {
                     "masks": masks,
