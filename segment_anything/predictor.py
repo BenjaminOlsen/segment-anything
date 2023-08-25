@@ -59,7 +59,7 @@ class SamPredictor:
 
         self.set_torch_image(input_image_torch, image.shape[:2])
 
-    @torch.no_grad()
+
     def set_torch_image(
         self,
         transformed_image: torch.Tensor,
